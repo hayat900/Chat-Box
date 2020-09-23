@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <link rel="stylesheet" href="/public/stylesheets/emojionearea.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    
+    <script src="/public/stylesheets/emojionearea.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+                           <script src="http://localhost:8080/socket.io/socket.io.js"></script> 
+  
+   
+ <script>
+  /*tinymce.init({
+    selector: "#message",
+    plugins: "emoticons autoresize",
+  toolbar: "emoticons",
+  toolbar_location: "bottom",
+  menubar: false,
+  statusbar: false,
+      width:500,
+      height:200
+      
+  });*/
+</script>
+	<title>ChatIO</title>
+	<style>
+		
+html, body, input {
+ font-family: Georgia, Tahoma, Arial, sans-serif;
+ margin: 0;
+ padding: 0;
+}
+body {
+ background: lightsteelblue;
+ padding: 20px;
+}
+form {
+ margin: 15px 0;
+}
+form input[type='text'] {
+ border: 2px solid #eb5424;
+ border-radius: 5px;
+ padding: 5px;
+ width: 60%;
+
+}
+form input[type='submit'] {
+ background: #eb5424;
+ border: none;
+ border-radius: 5px;
+ color: #FFF;
+ cursor: pointer;
+ font-weight: bold;
+ padding: 7px 5px;
+ width: 19%;
+}
+	
+
+		
+		
+        
+        #messageForm{
+            display:none;
+            margin-left:15%;
+            margin-top:45%;
+        }
+		#chatWrapper{
+			float:left;
+			border:1px #ccc solid;
+			border-radius: 10px;
+			background:#f4f4f4;
+			padding-right:20px;
+            display:none;
+              width:50%;
+            margin-left:15%;
+            overflow:auto;
+            background-color:black;
+            height: 550px;
+        
+		}
+
+		#userWrapper{
+			float:right;
+			border:1px #ccc solid;
+			border-radius: 10px;
+			background:#f4f4f4;
+			padding:10px;
+			margin-top:10%;
+			width:150px;
+			max-height:200px;
+            display:none;
+             overflow:auto;
+           
+            
+		}
+        .emojionearea.emojionearea-inline {
+            border: 2px solid #eb5424;
+ border-radius: 5px;
+ padding: 0px;
+ width: 65%;
+            margin-top:2px;
+        }
+		#namesWrapper{
+			float:left;
+			border:1px #ccc solid;
+			border-radius: 10px;
+			background:#f4f4f4;
+			padding:10px;
+			margin-left:20px;
+            
+		}
+       
+		input{
+			height:30px;
+			border:solid 1px #ccc;
+		}
+        .receiver{
+            float:right;
+            color:lime;
+        }
+        .sender{
+            float:left;
+            color:lightpink;
+        }
+        .sendertime{
+           margin-left:10%;
+            color:DodgerBlue;
+        }
+        .middle{
+            text-align:left;
+            
+        }
+        .typing{
+            color:BlueViolet;
+        }
+        .typingclass{
+            color:Mediumvioletred;
+        }
+       
+	</style>
+</head>
+<body>
+   
+		<div id="namesWrapper">
+			
+			<p>Create Username:</p>
+            <div id="error"></div>
+			<form id="usernameForm">
+				<input type="text" size="35" id="username" required>
+				<input type="submit" value="Submit" class="btn btn-outline-danger" id="user">
+			</form>
+		</div>
+    
+   
+ <div id="userWrapper">
+				  <div id="Peopleonline">
+                  <h3>People Online</h3>
+            </div>
+         
+			</div>
+     
+    <center><h2>ChatIO</h2></center>
+			<ul id="chatWrapper">
+				</ul>
+         
+         
+    
+				<form id="messageForm">
+                    <input type="text"   size="30"  id="message" placeholder="Say Something..." ><br>
+                   
+					<input type="submit" value="Submit" class="btn btn-outline-danger" id="mes">
+				</form>
+    
+
+              
+			
+		
+	
+    
+</body>
+    <script>
+        $(document)
+   $(function(){
+ var socket=io.connect()
+ console.log("i ma here");
+     var message=$("#message");
+     var username=$("#username");
+     var messageform=$("#messageForm");
+     var usernameform=$("#usernameForm");
+     var chatwindow=$("#chatWrapper");
+       var userwrapper=$("#userWrapper")
+       var myname;
+   $("#message").emojioneArea({
+        pickerPosition:"top"
+    })
+
+
+    usernameform.submit(function(e){
+       e.preventDefault();
+         console.log(username.val());
+        myname=username.val();
+         socket.emit("username",{username:username.val()});
+        document.getElementById("chatWrapper").style.display="block";
+        document.getElementById("namesWrapper").style.display="none";
+        document.getElementById("userWrapper").style.display="block";
+        document.getElementById("Peopleonline").style.display="block";
+        document.getElementById("messageForm").style.display="block";
+        
+        
+     });
+    myname=username.val();
+       username.val('');
+socket.on("is_online",function(data){
+    chatwindow.append("<center><p class='typing'>"+data.text+"</br></p></center>");
+    userwrapper.append(data.name+"</br>");
+})
+messageform.submit(function(e){
+    e.preventDefault();
+    console.log(message.val());
+   
+   
+    var currentDate = new Date();
+    var day = (currentDate.getDate() < 10 ? '0' : '') + currentDate.getDate();
+    var month = ((currentDate.getMonth() + 1) < 10 ? '0' : '') + (currentDate.getMonth() + 1);
+    var year = currentDate.getFullYear();
+    var hour = (currentDate.getHours() < 10 ? '0' : '') + currentDate.getHours();
+    var minute = (currentDate.getMinutes() < 10 ? '0' : '') + currentDate.getMinutes();
+    var second = (currentDate.getSeconds() < 10 ? '0' : '') + currentDate.getSeconds();
+    var now_date=day + "-" + month + "-" + year + " " + hour + ":" + minute + ":" + second;
+    console.log(now_date);
+     socket.emit("new_message",{new_message:message.val(),time:now_date});
+    message.val(" ");
+   $("div.emojionearea-editor").data("emojioneArea").setText('');
+   
+    
+});
+     $(".emojionearea.emojionearea-inline").focus(function(){
+         
+           socket.emit("typing",{name:myname});  
+     });
+    
+        
+  
+ socket.on("typing",function(data){
+    if(data.username===myname){
+        data.colorclass="sendertyping";
+       
+    }
+    else{
+        data.colorclass="receivertyping";
+    }
+    chatwindow.append("<i class='typingclass'>"+ data.username+" is typing.....</i></br>" );
+ }) 
+          
+socket.on("new_message",function(data){
+    console.log(data.new_message);
+    if(data.username===myname){
+        data.colorclass="sender";
+        data.username="You";
+        data.colortext="sendertime";
+        
+    }
+    else{
+        data.colorclass="receiver";
+         data.colortext="receivertime";
+    }
+    chatwindow.append("</br><li class="+data.colorclass +">"+data.username+" : "+data.new_message+"</li></br>" );
+    chatwindow.append("</br><span class="+data.colorclass +">"+data.time+"</span></br>");
+    
+})
+});
+    
+    
+    </script>
+</html>
