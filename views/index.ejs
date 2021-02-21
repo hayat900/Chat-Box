@@ -182,6 +182,7 @@ form input[type='submit'] {
         $(document)
    $(function(){
  var socket=io.connect()
+ 
  console.log("i ma here");
      var message=$("#message");
      var username=$("#username");
@@ -211,8 +212,12 @@ form input[type='submit'] {
     myname=username.val();
        username.val('');
 socket.on("is_online",function(data){
+    chatwindow.val("");
     chatwindow.append("<center><p class='typing'>"+data.text+"</br></p></center>");
-    userwrapper.append(data.name+"</br>");
+    userwrapper.val('');
+    for(var num=0;num<(data.name).length;num++){
+    userwrapper.append(data.name[num]+"</br>");
+    }
 })
 messageform.submit(function(e){
     e.preventDefault();
@@ -251,7 +256,7 @@ messageform.submit(function(e){
     }
     chatwindow.append("<i class='typingclass'>"+ data.username+" is typing.....</i></br>" );
  }) 
-          
+     
 socket.on("new_message",function(data){
     console.log(data.new_message);
     if(data.username===myname){
@@ -267,7 +272,18 @@ socket.on("new_message",function(data){
     chatwindow.append("</br><li class="+data.colorclass +">"+data.username+" : "+data.new_message+"</li></br>" );
     chatwindow.append("</br><span class="+data.colorclass +">"+data.time+"</span></br>");
     
-})
+});
+socket.on("user_disconnect", function(data){
+     console.log(data.description);
+     chatwindow.append("<center><p class='typing'>"+data.description+"</br></p></center>");
+     userwrapper.val("");
+     console.log(data.name);
+    for(var num=0;num<(data.name).length;num++){
+       userwrapper.append(data.name[num]+"</br>");
+        }
+    
+});   
+
 });
     
     
