@@ -120,7 +120,7 @@ form input[type='submit'] {
         }
         .sender{
             float:left;
-            color:lightpink;
+            color:rgb(17, 109, 195);
         }
         .sendertime{
            margin-left:10%;
@@ -132,6 +132,9 @@ form input[type='submit'] {
         }
         .typing{
             color:BlueViolet;
+        }
+        .typing1{
+            color:yellow;
         }
         .typingclass{
             color:Mediumvioletred;
@@ -275,7 +278,7 @@ socket.on("new_message",function(data){
 });
 socket.on("user_disconnect", function(data){
      console.log(data.description);
-     chatwindow.append("<center><p class='typing'>"+data.description+"</br></p></center>");
+     chatwindow.append("<center><p class='typing1'>"+data.description+"</br></p></center>");
      userwrapper.val("");
      console.log(data.name);
     for(var num=0;num<(data.name).length;num++){
