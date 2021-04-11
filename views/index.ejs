@@ -32,7 +32,7 @@ html, body, input {
 }
 body {
  background: lightsteelblue;
- padding: 20px;
+ padding: 15px;
 }
 form {
  margin: 15px 0;
@@ -53,16 +53,21 @@ form input[type='submit'] {
  font-weight: bold;
  padding: 7px 5px;
  width: 19%;
+
 }
-	
 
 		
-		
+		#Peopleonline{
+         float:right;
+         margin-left: -17%;
+         position: relative;
+        
+        }
         
         #messageForm{
             display:none;
             margin-left:15%;
-            margin-top:45%;
+            margin-top:42%;
         }
 		#chatWrapper{
 			float:left;
@@ -74,9 +79,10 @@ form input[type='submit'] {
               width:50%;
             margin-left:15%;
             overflow:auto;
-            background-color:black;
-            height: 550px;
+            background-color:rgba(0, 0, 0, 0.829);
+            height: 500px;
         
+
 		}
 
 		#userWrapper{
@@ -85,7 +91,7 @@ form input[type='submit'] {
 			border-radius: 10px;
 			background:#f4f4f4;
 			padding:10px;
-			margin-top:10%;
+			margin-top:8%;
 			width:150px;
 			max-height:200px;
             display:none;
@@ -106,7 +112,7 @@ form input[type='submit'] {
 			border-radius: 10px;
 			background:#f4f4f4;
 			padding:10px;
-			margin-left:20px;
+			margin-left:30%;
             
 		}
        
@@ -120,7 +126,7 @@ form input[type='submit'] {
         }
         .sender{
             float:left;
-            color:rgb(17, 109, 195);
+            color:rgb(208, 30, 214);
         }
         .sendertime{
            margin-left:10%;
@@ -139,7 +145,7 @@ form input[type='submit'] {
         .typingclass{
             color:Mediumvioletred;
         }
-       
+        
 	</style>
 </head>
 <body>
@@ -154,15 +160,15 @@ form input[type='submit'] {
 			</form>
 		</div>
     
-   
+        <h3 id="Peopleonline">People Online</h3>
  <div id="userWrapper">
-				  <div id="Peopleonline">
+    
+				 
                   <h3>People Online</h3>
             </div>
-         
 			</div>
      
-    <center><h2>ChatIO</h2></center>
+    
 			<ul id="chatWrapper">
 				</ul>
          
@@ -171,7 +177,7 @@ form input[type='submit'] {
 				<form id="messageForm">
                     <input type="text"   size="30"  id="message" placeholder="Say Something..." ><br>
                    
-					<input type="submit" value="Submit" class="btn btn-outline-danger" id="mes">
+					<input type="submit" value="Submit" class="btn btn-outline-danger" id="messageForm mes">
 				</form>
     
 
@@ -184,9 +190,10 @@ form input[type='submit'] {
     <script>
         $(document)
    $(function(){
+    document.getElementById("Peopleonline").style.display="none";
  var socket=io.connect()
+
  
- console.log("i ma here");
      var message=$("#message");
      var username=$("#username");
      var messageform=$("#messageForm");
@@ -201,7 +208,7 @@ form input[type='submit'] {
 
     usernameform.submit(function(e){
        e.preventDefault();
-         console.log(username.val());
+         
         myname=username.val();
          socket.emit("username",{username:username.val()});
         document.getElementById("chatWrapper").style.display="block";
@@ -212,19 +219,22 @@ form input[type='submit'] {
         
         
      });
-    myname=username.val();
-       username.val('');
+    myname=username.val(null);
+       username.val(null);
 socket.on("is_online",function(data){
+   
     chatwindow.val("");
+    document.getElementById("Peopleonline").style.display="block";
     chatwindow.append("<center><p class='typing'>"+data.text+"</br></p></center>");
-    userwrapper.val('');
-    for(var num=0;num<(data.name).length;num++){
-    userwrapper.append(data.name[num]+"</br>");
-    }
+    userwrapper.val(null);
+   
+    document.getElementById("userWrapper").innerHTML="";
+    for(var i=0;i<data.name.length;i++)
+    document.getElementById("userWrapper").innerHTML+= data.name[i]+"<br>";
 })
 messageform.submit(function(e){
     e.preventDefault();
-    console.log(message.val());
+    
    
    
     var currentDate = new Date();
@@ -235,7 +245,7 @@ messageform.submit(function(e){
     var minute = (currentDate.getMinutes() < 10 ? '0' : '') + currentDate.getMinutes();
     var second = (currentDate.getSeconds() < 10 ? '0' : '') + currentDate.getSeconds();
     var now_date=day + "-" + month + "-" + year + " " + hour + ":" + minute + ":" + second;
-    console.log(now_date);
+   
      socket.emit("new_message",{new_message:message.val(),time:now_date});
     message.val(" ");
    $("div.emojionearea-editor").data("emojioneArea").setText('');
@@ -261,7 +271,7 @@ messageform.submit(function(e){
  }) 
      
 socket.on("new_message",function(data){
-    console.log(data.new_message);
+    
     if(data.username===myname){
         data.colorclass="sender";
         data.username="You";
@@ -277,13 +287,15 @@ socket.on("new_message",function(data){
     
 });
 socket.on("user_disconnect", function(data){
-     console.log(data.description);
+    
      chatwindow.append("<center><p class='typing1'>"+data.description+"</br></p></center>");
      userwrapper.val("");
-     console.log(data.name);
-    for(var num=0;num<(data.name).length;num++){
-       userwrapper.append(data.name[num]+"</br>");
-        }
+   
+    
+     document.getElementById("userWrapper").innerHTML="";
+    for(var i=0;i<data.name.length;i++)
+    document.getElementById("userWrapper").innerHTML+= data.name[i]+"<br>";
+        
     
 });   
 
